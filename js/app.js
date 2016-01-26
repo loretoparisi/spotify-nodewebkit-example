@@ -185,7 +185,7 @@ webapp.load(function() { // app loaded
 				track.name + " by " +track.artist.name);
 			setTimeout(function () {
 				notif.close();
-			}, 1200);
+			}, 1000 * 3);
 		}
 		player.currentTrack=track;
 

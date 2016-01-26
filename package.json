@@ -1,5 +1,5 @@
 {
-  "name": "Spotify Scrobbler",
+  "name": "spotify-nodewebkit-example",
   "version": "1.0.0",
   "description": "Spotify app",
   "main": "index.html",
@@ -22,5 +22,12 @@
   "app" : {
     "display_name" : "Spotify Scrobbler",
     "url_open_external" : true
+  },
+  "repository": "https://github.com/loretoparisi/spotify-nodewebkit-example",
+  "scripts": {
+    "start": "nw ."
+  },
+  "dependencies": {
+    "node-spotify-webhelper": "^0.0.4"
   }
 }
