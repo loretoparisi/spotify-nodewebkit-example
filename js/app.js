@@ -13,6 +13,7 @@ function SpotifyPlayer (spotify,options) {
 	this.options = options;
 	this.spotify = spotify;
 	var self=this;
+	this.currentTrack=null;
 	this.thread = new Timer(this,"",this.options.interval,true); // timer thread
 
 	/**********
@@ -92,12 +93,11 @@ function UI() {
 	*/
 	this.updateTrackInfo = function(spotifyTrack) {
 		try {
-			var trackInfo=spotifyTrack.data;
 			$('.container .trackInfo').empty();
 			$('.container .trackInfo').append($('<span/>')
-				.text(trackInfo.track_resource.name)
+				.text(spotifyTrack.name)
 			).append($('<span/>')
-				.text(trackInfo.artit_resource.name)
+				.text(spotifyTrack.artist.name)
 			);
 
 		} catch(error) {
@@ -166,15 +166,28 @@ else { // undefined
 }
 webapp.load(function() { // app loaded
 
+	// start scrobbler
 	player.scrobble(function(res) {
 
 		var track = new SpotifyTrack(res);
+		track.map(res);
+
 		var playerStatus = new SpotifyPlayerStatus(res);
 
 		Logger.dump( track );
 		Logger.dump( playerStatus );
 
 		ui.update( track, playerStatus );
+
+		if(!player.currentTrack || (player.currentTrack && track && player.currentTrack.uri!=track.uri)) { // track changed
+			var notif = webapp.showNotification("./assets/icon_spotify_tray_19.png",
+				"Now Playing",
+				track.name + " by " +track.artist.name);
+			setTimeout(function () {
+				notif.close();
+			}, 1200);
+		}
+		player.currentTrack=track;
 
 	});
 

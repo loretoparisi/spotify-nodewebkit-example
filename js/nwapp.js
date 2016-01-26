@@ -5,6 +5,8 @@
 * @2015-2016 Loreto Parisi
 */
 
+var gui = require('nw.gui');
+
 /**
 * Basic Web app Interface
 */
@@ -31,9 +33,11 @@ function NodeWebKitApp() {
 		App.platform=process.platform;
 
 		// GUI
-		var gui = require('nw.gui');
+
 		var win = gui.Window.get();
-		this.window = win;
+    this.window = win;
+    // bring window to front when open via terminal
+    gui.Window.get().focus();
 
 		// menu
 		var menu = new gui.Menu({type:"menubar"});
@@ -43,6 +47,7 @@ function NodeWebKitApp() {
 		} // MacOS
 
 		this.showDevTools();
+    this.showTray();
 
 		// buggy: https://github.com/nwjs/nw.js/issues/2926
 		var eventsNewWinPolicy = function(frame, url, policy) {
@@ -81,7 +86,37 @@ function NodeWebKitApp() {
 	} // load
 	this.showDevTools = function() {
 		this.window.showDevTools();
-	}
+	}//showDevTools
+  this.showTray = function() {
+    // Create a tray icon
+    var tray = new gui.Tray({
+      title: 'Tray',
+      icon: 'assets/icon_spotify_tray_19.png'
+    });
+    // Give it a menu
+    var menu = new gui.Menu();
+    menu.append(new gui.MenuItem({ type: 'checkbox', label: 'box1' }));
+    tray.menu = menu;
+  } //showTray
+  // NW.JS Notification
+  this.showNotification = function (icon, title, body) {
+    if (icon && icon.match(/^\./)) {
+      icon = icon.replace('.', 'file://' + process.cwd());
+    }
+
+    var notification = new Notification(title, {icon: icon, body: body});
+
+    notification.onclick = function () {
+      console.log("Notification clicked " + title);
+    };
+    notification.onclose = function () {
+      gui.Window.get().focus();
+    };
+    notification.onshow = function () {
+      console.log("Showed notification " + title);
+    };
+    return notification;
+  } //showNotification
 
 } //NodeWebKitApp
 NodeWebKitApp.prototype = WebApp.prototype;        // Set prototype to WebApp's
